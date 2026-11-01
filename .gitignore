@@ -1,0 +1,10 @@
+# Generated distribution archives
+/vtmb_cloth-*.zip
+
+# Python caches
+__pycache__/
+*.py[cod]
+
+# Local editor state
+.vscode/
+.idea/
