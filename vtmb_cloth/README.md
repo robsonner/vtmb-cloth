@@ -1,4 +1,4 @@
-# VTMB Cloth — Blender add-on 0.10.0
+# VTMB Cloth — Blender add-on 0.10.2
 
 Create and edit cloth for Vampire: The Masquerade – Bloodlines on the existing
 render mesh and real skeleton. The add-on reads and writes the project's
@@ -19,7 +19,7 @@ Development is concluded for now; broader regression testing remains deferred.
 - A complete source project: QC, REF, real skeleton, materials/UVs and associated
   animations/physics/capsules. Existing cloth additionally needs its `.vcloth`.
 
-Install `vtmb_cloth-0.10.0.zip` using Blender **Preferences > Add-ons > Install
+Install `vtmb_cloth-0.10.2.zip` using Blender **Preferences > Add-ons > Install
 from Disk** (in the Add-ons menu), then enable **VTMB Cloth**. Restart Blender
 after upgrading. Open the 3D View sidebar with **N**, then select **VTMB Cloth**.
 Install the ZIP, not the individual Python files. The package does not include
@@ -29,9 +29,15 @@ Source Tools, the compiler or game assets.
 
 1. Work on a copy of the complete source project and save a `.blend` backup.
 2. Import its QC with Source Tools, or import the appropriate REF and skeleton.
-3. Keep the original paired REF SMD beside the imported `.vcloth`, at the path
-   the sidecar records. Keep the original QC available for QC-imported rigs.
-   Generation/export verifies this skeleton against a disposable control import.
+3. Keep the paired REF SMD beside the imported `.vcloth`, with the same filename
+   stem (for example `coat.smd` and `coat.vcloth`). No REF filename is stored in
+   VCLOTH; obsolete `reference_smd` fields are ignored and omitted on export.
+   Rename both files together when working in Blender. The compiler uses the
+   explicit QC model/source bindings, including independently named files.
+   Generation/export verifies the skeleton against a
+   disposable import of that REF SMD. Float32 import roundoff is tolerated;
+   bone names, hierarchy and bone options must still match exactly. Nearby QC,
+   ragdoll physics and capsule files do not determine this reference-pose proof.
 4. Use one unsplit, triangulated REF with its real Armature modifier. Keep unit
    object scale, original axes/origin, Basis active and neutral shape keys.
 5. For capsule placement and export, use the armature's **Rest Position**.

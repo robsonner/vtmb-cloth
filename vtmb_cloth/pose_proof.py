@@ -1,6 +1,6 @@
-"""Exact imported-rest proof through the installed public SMD import operator."""
+"""Selected-SMD rest proof through the installed public import operator."""
 import uuid
-import re
+import math
 from pathlib import Path
 import bpy
 from . import export, matching, smd
@@ -13,39 +13,30 @@ def signature(rig):
             for b in rig.data.bones}
 
 
-def qc_candidates(reference_path, document):
-    """Find verifiable QC contexts; filenames alone are never pose evidence.
+def validate_signature(actual, expected):
+    """Allow float32 import roundoff, retaining exact hierarchy and bone options.
 
-    The first declared render input must be the paired canonical REF. All
-    explicit body/physics skeletons must have its validated original pose.
-    Unknown include/path/transform composition is deliberately unsupported.
+    Source Tools' QC import can rebuild the armature for additional SMD inputs,
+    introducing roundoff absent from a bare REF import. Use 64 float32 epsilons
+    for the composed matrices. Translation scales with the bone's model-space
+    position; rotation/scale entries have a unit floor. This is a numeric error
+    budget, not permission to rebind or reposition the skeleton.
     """
-    reference_path=Path(reference_path).resolve()
-    result=[]
-    for path in sorted(reference_path.parent.glob('*.qc')):
-        text=path.read_text(encoding='utf-8-sig')
-        text=re.sub(r'//[^\n]*','',text)
-        if re.search(r'^\s*\$(?:include|cd|pushd|popd|definebone|origin|scale|upaxis)\b',text,re.I|re.M):
-            continue
-        inputs=re.findall(r'^\s*\$(?:model|body|collisionjoints|collisionmodel)\s+"([^"]+)"(?:\s+"([^"]+)")?',text,re.I|re.M)
-        if not inputs:
-            continue
-        filenames=[second or first for first,second in inputs]
-        paths=[]
-        for filename in filenames:
-            candidate=path.parent/filename.replace('\\','/')
-            if not candidate.suffix:
-                candidate=candidate.with_suffix('.smd')
-            paths.append(candidate.resolve())
-        if paths[0]!=reference_path:
-            continue
-        try:
-            for candidate in paths:
-                export.validate_pose(document,smd.read(candidate))
-        except (ValueError,OSError):
-            continue
-        result.append(path)
-    return result
+    require(actual.keys()==expected.keys(), 'Reference skeleton bone names differ from selected REF SMD')
+    epsilon=64*(2**-23)
+    for name in sorted(expected):
+        a,b=actual[name],expected[name]
+        require(a[0]==b[0], f'Reference skeleton hierarchy differs on {name}')
+        require(a[2:]==b[2:], f'Reference skeleton bone options differ on {name}')
+        am,bm=a[1],b[1]
+        require(all(math.isfinite(v) for v in (*am,*bm)),
+                f'Reference skeleton has non-finite transform on {name}')
+        position_scale=max(1,*(abs(m[i]) for m in (am,bm) for i in (3,7,11)))
+        for i,(x,y) in enumerate(zip(am,bm)):
+            scale=position_scale if i in (3,7,11) else max(1,abs(x),abs(y))
+            require(abs(x-y)<=epsilon*scale,
+                    f'Reference skeleton differs from selected REF SMD on {name} '
+                    f'({"position" if i in (3,7,11) else "rotation/scale"}); output withheld')
 
 
 def control_signature(context,path):
@@ -82,7 +73,7 @@ def prove(context, rig, reference_path, document, stage, source_document=None, v
     source=smd.read(reference_path)
     export.validate_pose(document,source)
     # An explicitly authored mesh has a new geometry snapshot, but its source
-    # skeleton must still be proved against the original paired REF/QC.
+    # skeleton must still be proved against the selected original REF SMD.
     source_document = document if source_document is None else source_document
     require(source_document['reference']['bones'] == document['reference']['bones'],
             'Geometry editing changed the reference skeleton')
@@ -106,14 +97,7 @@ def prove(context, rig, reference_path, document, stage, source_document=None, v
     lines+=['end','']
     path=Path(stage)/('pose-proof-'+uuid.uuid4().hex+'.smd')
     path.write_text('\n'.join(lines),encoding='utf-8')
-    matched=before==control_signature(context,path)
+    validate_signature(before,control_signature(context,path))
     source['_proof_context']='REF SMD'
-    if not matched:
-        for qc in qc_candidates(reference_path,document):
-            if before==control_signature(context,qc):
-                matched=True
-                source['_proof_context']=str(qc)
-                break
-    require(matched,'Reference skeleton differs from unchanged REF/QC control imports; output withheld')
     require(signature(rig)==before,'Reference skeleton changed during pose proof')
     return source

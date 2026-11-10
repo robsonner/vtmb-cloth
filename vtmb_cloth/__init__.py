@@ -1,7 +1,7 @@
 """VTMB Cloth file inspector; independent of Blender Source Tools."""
 bl_info = {
     'name': 'VTMB Cloth', 'author': 'VTMB SDK contributors',
-    'version': (0, 10, 0), 'blender': (5, 0, 0),
+    'version': (0, 10, 2), 'blender': (5, 0, 0),
     'location': 'View3D > Sidebar > VTMB Cloth',
     'description': 'Inspect and edit VTMB cloth on the original REF mesh',
     'category': 'Import-Export',
@@ -966,7 +966,7 @@ class VTMBExport(bpy.types.Operator, ExportHelper):
         from pathlib import Path
         try:
             d, _ = document(context.scene.vtmb_cloth)
-            self.filepath=str(Path(context.scene.vtmb_cloth.source_path).parent / Path(d['reference_smd']).name)
+            self.filepath=str(Path(context.scene.vtmb_cloth.source_path).with_suffix('.smd'))
         except ValueError as exc:
             self.report({'ERROR'},str(exc))
             return {'CANCELLED'}

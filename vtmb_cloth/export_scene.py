@@ -198,7 +198,7 @@ def export_sources(context, output_directory, reference_name, document):
     operator=bpy.ops.export_scene.smd
     require('collection' in operator.get_rna_type().properties.keys(),'Installed SMD exporter lacks collection export capability')
     saved={f:getattr(vs,f) for f in fields}
-    reference_path=Path(settings.source_path).parent/document['reference_smd']
+    reference_path=Path(settings.source_path).with_suffix('.smd')
     require(reference_path.is_file(),'The paired original REF SMD is required for unchanged-pose proof')
     generated = settings.generated_proof is not None
     if generated:

@@ -203,7 +203,7 @@ def adapt(document, raw_text, snapshots, reference_name, original_reference):
     options=matching.candidates(document,final['faces'],matching.compatible)
     matching.resolve_candidates(document,options)
     sidecar=copy.deepcopy(document)
-    sidecar['reference_smd']=reference_name
+    sidecar.pop('reference_smd', None)
     schema.validate(sidecar)
     report={'faces':len(mapped),'restored_position_corners':position_changes,'restored_uv_corners':uv_changes,'restored_normal_corners':normal_changes,'restored_weight_corners':skin_changes,'preserved_bindpose_bones':pose_changes,
             'raw_smd_sha256':hashlib.sha256(raw_text.encode()).hexdigest(),

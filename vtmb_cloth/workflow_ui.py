@@ -182,7 +182,7 @@ def draw_panel(layout, context, api):
             layout.operator('vtmb_cloth.clear')
             return
         status = layout.box()
-        status.label(text=d['reference_smd'], icon='FILE_3D')
+        status.label(text='REF + VCLOTH', icon='FILE_3D')
         status.label(text='REF connected' if s.targets else 'Cloth data loaded')
         status.label(text=s.binding_status)
     if workflow == 'EDIT':

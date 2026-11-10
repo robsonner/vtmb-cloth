@@ -312,7 +312,7 @@ def add(context, settings, strength, bend_ratio):
     fixed = json.loads(settings.authoring_anchors)
     require(fixed, 'Set Generator Anchors for the additional region first')
     selected = sorted(saved['faces'])
-    path = (Path(settings.source_path).parent/base['reference_smd']).resolve()
+    path = Path(settings.source_path).with_suffix('.smd').resolve()
     source_bytes = path.read_bytes()
     reference = smd.loads(source_bytes.decode('utf-8-sig'))
     export.validate_pose(base, reference)
@@ -322,7 +322,7 @@ def add(context, settings, strength, bend_ratio):
         for corner, source in enumerate(ids):
             if source in protected['required']:
                 identities[face][corner] = source
-    addition = generation.build(authored_faces, topology, selected, fixed, reference, base['reference_smd'],
+    addition = generation.build(authored_faces, topology, selected, fixed, reference, path.name,
         strength, bend_ratio, base['simulation']['time_step_scale'], corner_identity=identities,
         reference_bones=base['reference']['bones'])
     retained_base, vertex_map = refresh_reference(base, addition, protected)

@@ -43,7 +43,6 @@ def validate(d):
     integer(d['version'], 1, 1)
     integer(d['lod'], 0)
     require(d['coordinate_space'] == 'reference_model', "Unsupported coordinates")
-    require(isinstance(d['reference_smd'], str) and d['reference_smd'], "Missing REF filename")
     r, s = d['reference'], d['simulation']
     bones, vertices, nodes = r['bones'], r['vertices'], s['nodes']
     nv, nn = len(vertices), len(nodes)
@@ -148,6 +147,8 @@ def _pairs(pairs):
 def loads(text):
     try:
         d = json.loads(text, object_pairs_hook=_pairs)
+        if isinstance(d, dict):
+            d.pop('reference_smd', None)  # Obsolete filename metadata is not a binding.
         # Include unknown fields in finite-number validation and retain them.
         def walk(value):
             if isinstance(value, dict):
@@ -173,4 +174,6 @@ def read(path):
 
 def dumps(d):
     validate(d)
-    return json.dumps(d, ensure_ascii=False, allow_nan=False, indent=2) + '\n'
+    payload = dict(d)
+    payload.pop('reference_smd', None)
+    return json.dumps(payload, ensure_ascii=False, allow_nan=False, indent=2) + '\n'

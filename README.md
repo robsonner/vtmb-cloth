@@ -1,4 +1,4 @@
-# VTMB Cloth for Blender — 0.10.0
+# VTMB Cloth for Blender — 0.10.2
 
 Tools for inspecting, editing and creating Vampire: The Masquerade – Bloodlines
 cloth on the original render mesh and real skeleton. Supports shape edits,
@@ -11,7 +11,7 @@ broader final regression series remains deferred.
 
 ## Install
 
-Enable Blender Source Tools, then install `vtmb_cloth-0.10.0.zip` using Blender
+Enable Blender Source Tools, then install `vtmb_cloth-0.10.2.zip` using Blender
 **Preferences > Add-ons > Install from Disk** and enable **VTMB Cloth**.
 Restart Blender after upgrading. Open **3D View > N sidebar > VTMB Cloth**.
 
@@ -67,5 +67,22 @@ python tools/package_blender_vcloth.py
 ```
 
 Packaging parses Python syntax and includes the package documentation; it does
-not execute Blender, compiler or game tests. The packaged version remains 0.10.0.
+not execute Blender, compiler or game tests. The packaged version is 0.10.2.
 See the full user guide for supported workflows and validation limits.
+
+### 0.10.2 file pairing
+
+New exports omit `reference_smd`; existing values are ignored. Blender pairs
+REF and VCLOTH by the same filename stem in the same directory. QC remains the
+compiler's authority for model/source binding. Real geometry, pose and binding
+validation remains enabled. Rename both files together for Blender use.
+
+### 0.10.1 reference-pose correction
+
+Generation/export now proves the live skeleton against the selected REF SMD
+with a bounded float32 import tolerance. It no longer searches neighboring QC
+files or depends on their ragdoll physics sources. Names, hierarchy and bone
+options remain exact checks. The reported QC-imported character passed the
+pose proof; translation, rotation, scale, missing-bone, hierarchy, option and
+non-finite-transform rejection checks passed. Full cloth export/game testing
+for this patch remains pending.
