@@ -149,6 +149,7 @@ def loads(text):
         d = json.loads(text, object_pairs_hook=_pairs)
         if isinstance(d, dict):
             d.pop('reference_smd', None)  # Obsolete filename metadata is not a binding.
+            d.pop('source_model', None)
         # Include unknown fields in finite-number validation and retain them.
         def walk(value):
             if isinstance(value, dict):
@@ -176,4 +177,5 @@ def dumps(d):
     validate(d)
     payload = dict(d)
     payload.pop('reference_smd', None)
+    payload.pop('source_model', None)
     return json.dumps(payload, ensure_ascii=False, allow_nan=False, indent=2) + '\n'

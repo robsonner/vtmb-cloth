@@ -1,7 +1,7 @@
 """VTMB Cloth file inspector; independent of Blender Source Tools."""
 bl_info = {
     'name': 'VTMB Cloth', 'author': 'VTMB SDK contributors',
-    'version': (0, 10, 2), 'blender': (5, 0, 0),
+    'version': (0, 10, 3), 'blender': (5, 0, 0),
     'location': 'View3D > Sidebar > VTMB Cloth',
     'description': 'Inspect and edit VTMB cloth on the original REF mesh',
     'category': 'Import-Export',

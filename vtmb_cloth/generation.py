@@ -282,7 +282,6 @@ def build(faces, topology, selected_faces, fixed_points, reference, reference_na
             mesh['bindings'].append({'vertex': source, 'node': node, 'node_flags': 0 if direction > 0 else 32768,
                                      'tangent_index': len(nodes)+tangent})
     document = {'format': 'vtmb-cloth', 'version': 1, 'lod': 0, 'coordinate_space': 'reference_model',
-                'source_model': '',
                 'reference': {'bones': bones, 'vertices': vertices, 'triangles': triangles, 'meshes': meshes},
                 'simulation': simulation,
                 'vtmb_cloth_authoring': {'version': 1, 'generator': 'selected-ref-topology',

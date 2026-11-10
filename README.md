@@ -1,4 +1,4 @@
-# VTMB Cloth for Blender — 0.10.2
+# VTMB Cloth for Blender — 0.10.3
 
 Tools for inspecting, editing and creating Vampire: The Masquerade – Bloodlines
 cloth on the original render mesh and real skeleton. Supports shape edits,
@@ -11,7 +11,7 @@ broader final regression series remains deferred.
 
 ## Install
 
-Enable Blender Source Tools, then install `vtmb_cloth-0.10.2.zip` using Blender
+Enable Blender Source Tools, then install `vtmb_cloth-0.10.3.zip` using Blender
 **Preferences > Add-ons > Install from Disk** and enable **VTMB Cloth**.
 Restart Blender after upgrading. Open **3D View > N sidebar > VTMB Cloth**.
 
@@ -67,8 +67,13 @@ python tools/package_blender_vcloth.py
 ```
 
 Packaging parses Python syntax and includes the package documentation; it does
-not execute Blender, compiler or game tests. The packaged version is 0.10.2.
+not execute Blender, compiler or game tests. The packaged version is 0.10.3.
 See the full user guide for supported workflows and validation limits.
+
+### 0.10.3 metadata cleanup
+
+New exports also omit unused `source_model` provenance. Existing values are
+discarded on read and export; no original MDL is loaded from this field.
 
 ### 0.10.2 file pairing
 
